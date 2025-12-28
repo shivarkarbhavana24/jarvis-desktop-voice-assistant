@@ -8,6 +8,7 @@ pipeline {
   }
 
   stages {
+
     stage('Checkout') {
       steps {
         git branch: 'main', url: 'https://github.com/shivarkarbhavana24/jarvis-desktop-voice-assistant.git'
@@ -19,7 +20,7 @@ pipeline {
         sshagent(credentials: ["${CRED_ID}"]) {
           sh '''
             ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}"
-            rsync -avz --delete --exclude=.git ./ ubuntu@13.127.66.232:/home/ubuntu/jarvis/
+            rsync -avz --delete --exclude=.git ./ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/
           '''
         }
       }
@@ -28,7 +29,13 @@ pipeline {
     stage('Remote: Setup & Restart') {
       steps {
         sshagent(credentials: ["${CRED_ID}"]) {
-          sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} 'cd ${REMOTE_DIR} && ./setup_and_restart.sh'"
+          sh '''
+            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
+              cd ${REMOTE_DIR} &&
+              chmod +x setup_and_restart.sh &&
+              ./setup_and_restart.sh
+            "
+          '''
         }
       }
     }
