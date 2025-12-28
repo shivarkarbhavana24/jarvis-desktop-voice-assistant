@@ -19,7 +19,7 @@ pipeline {
         sshagent(credentials: ["${CRED_ID}"]) {
           sh '''
             ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}"
-            rsync -avz --delete --exclude='.git' ./ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/
+            rsync -avz --delete --exclude=.git ./ ubuntu@13.127.66.232:/home/ubuntu/jarvis/
           '''
         }
       }
